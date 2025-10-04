@@ -1,5 +1,6 @@
 ﻿using CaseStudy.Services;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace CaseStudy.Controllers.Api
@@ -16,11 +17,11 @@ namespace CaseStudy.Controllers.Api
         }
 
         [HttpGet]
-        public IHttpActionResult Get(double? minPrice = null, double? maxPrice = null,
-                                     double? minPop = null, double? maxPop = null,
-                                     string sort = null)
+        public async Task<IHttpActionResult> Get(double? minPrice = null, double? maxPrice = null,
+                                                 double? minPop = null, double? maxPop = null,
+                                                 string sort = null)
         {
-            var list = _productService.GetProducts();
+            var list = await _productService.GetProductsAsync();
 
             if (minPrice.HasValue) list = list.Where(x => x.PriceUSD >= minPrice.Value).ToList();
             if (maxPrice.HasValue) list = list.Where(x => x.PriceUSD <= maxPrice.Value).ToList();
@@ -33,7 +34,9 @@ namespace CaseStudy.Controllers.Api
                 if (sort == "price_desc") list = list.OrderByDescending(x => x.PriceUSD).ToList();
             }
 
-            var gold = _goldService.GetGoldPricePerGramAsync().Result;
+            // Altın fiyatını al
+            var gold = await _goldService.GetGoldPricePerGramAsync();
+
             return Ok(new { goldPricePerGram = gold, products = list });
         }
 

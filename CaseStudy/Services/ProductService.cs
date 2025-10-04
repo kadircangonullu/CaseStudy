@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace CaseStudy.Services
 {
@@ -17,7 +18,7 @@ namespace CaseStudy.Services
             _gold = gold;
         }
 
-        public List<Product> GetProducts()
+        public async Task<List<Product>> GetProductsAsync()
         {
             var path = System.Web.HttpContext.Current.Server.MapPath("~/Data/products.json");
             if (!File.Exists(path)) return new List<Product>();
@@ -25,7 +26,7 @@ namespace CaseStudy.Services
             var json = File.ReadAllText(path);
             var list = JsonConvert.DeserializeObject<List<Product>>(json) ?? new List<Product>();
 
-            var goldPerGram = _gold.GetGoldPricePerGramAsync().Result; // sync çağrı
+            var goldPerGram = await _gold.GetGoldPricePerGramAsync(); // async çağrı
             for (int i = 0; i < list.Count; i++)
             {
                 var p = list[i];
@@ -34,6 +35,12 @@ namespace CaseStudy.Services
             }
 
             return list;
+        }
+
+        // Backward compatibility için sync versiyon
+        public List<Product> GetProducts()
+        {
+            return GetProductsAsync().GetAwaiter().GetResult();
         }
 
         private double ComputePrice(double popularityScore, double weight, double goldPerGram)

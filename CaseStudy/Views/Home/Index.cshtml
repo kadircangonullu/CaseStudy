@@ -15,8 +15,7 @@
 <body>
     <div class="header">
         <div class="container">
-            <h1>Engagement Rings</h1>
-            <p>Discover our exquisite collection of engagement rings, crafted with precision and designed to capture your perfect moment.</p>
+            <h1>Product List</h1>
         </div>
     </div>
 
@@ -30,12 +29,6 @@
             <button id="scrollLeft" class="scroll-arrow left" disabled>‹</button>
             <div id="productsGrid" class="products-grid"></div>
             <button id="scrollRight" class="scroll-arrow right">›</button>
-        </div>
-    </div>
-
-    <div class="footer">
-        <div class="container">
-            <p>&copy; 2024 Engagement Rings Collection. All rights reserved.</p>
         </div>
     </div>
 
@@ -112,17 +105,16 @@
                         <div class="product-info">
                             <h3 class="product-name">${p.name}</h3>
                             <div class="product-price">${fmtUSD(p.priceUSD)}</div>
-                            <div class="product-popularity">
-                                <span class="popularity-label">Popularity:</span>
-                                <div class="popularity-stars">${renderStars(popularityScore)}</div>
-                                <span style="margin-left: 8px; font-size: 0.9rem; color: #7f8c8d;">${popularityScore}/5</span>
-                            </div>
                             <div class="color-options">
                                 ${colorKeys.map((k, idx) => `
                                     <button data-idx="${idx}" class="color-btn ${idx === 0 ? 'active' : ''}" title="${k}">
-                                        ${k}
                                     </button>
                                 `).join('')}
+                            </div>
+                            <div class="color-label">${colorKeys[0] || 'Yellow Gold'}</div>
+                            <div class="product-popularity">
+                                <div class="popularity-stars">${renderStars(popularityScore)}</div>
+                                <span class="popularity-score">${popularityScore}/5</span>
                             </div>
                         </div>
                     `;
@@ -158,6 +150,12 @@
                             // Update active button
                             parent.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
                             btn.classList.add('active');
+                            
+                            // Update color label
+                            const colorLabel = parent.querySelector('.color-label');
+                            if (colorLabel) {
+                                colorLabel.textContent = btn.getAttribute('title');
+                            }
                         });
                     });
 

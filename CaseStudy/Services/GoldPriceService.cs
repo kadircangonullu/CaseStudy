@@ -20,7 +20,8 @@ namespace CaseStudy.Services
         {
             if (_cache.Contains(CacheKey)) return (double)_cache.Get(CacheKey);
 
-            var url = ConfigurationManager.AppSettings["GoldApi:Url"]; // örn: https://api.example.com/latest?access_key=KEY
+            var url = ConfigurationManager.AppSettings["GoldApi:Url"];
+            var token = ConfigurationManager.AppSettings["GoldApi:Token"];
             var cacheMinutes = int.TryParse(ConfigurationManager.AppSettings["GoldApi:CacheMinutes"], out var cm) ? cm : 10;
             var fallback = double.TryParse(ConfigurationManager.AppSettings["GoldApi:FallbackPerGram"], out var f) ? f : 60.0;
 
@@ -32,6 +33,11 @@ namespace CaseStudy.Services
 
             try
             {
+
+                _http.DefaultRequestHeaders.Clear();
+                if (!string.IsNullOrEmpty(token))
+                    _http.DefaultRequestHeaders.Add("x-access-token", token);
+
                 var res = await _http.GetAsync(url);
                 res.EnsureSuccessStatusCode();
                 var json = await res.Content.ReadAsStringAsync();

@@ -228,6 +228,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\styles.css" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -280,8 +281,40 @@
     <Content Include="Fonts-20251001T151614Z-1-001\Fonts\montserat\Montserrat-Thin.otf" />
     <Content Include="Fonts-20251001T151614Z-1-001\Fonts\montserat\Montserrat-ThinItalic.otf" />
     <Content Include="Data\products.json" />
+    <Content Include="Fonts\avenir\Avenir-Black.ttf" />
+    <Content Include="Fonts\avenir\Avenir-BlackOblique.ttf" />
+    <Content Include="Fonts\avenir\Avenir-Book.ttf" />
+    <Content Include="Fonts\avenir\Avenir-BookOblique.ttf" />
+    <Content Include="Fonts\avenir\Avenir-Heavy.ttf" />
+    <Content Include="Fonts\avenir\Avenir-HeavyOblique.ttf" />
+    <Content Include="Fonts\avenir\Avenir-Light.ttf" />
+    <Content Include="Fonts\avenir\Avenir-LightOblique.ttf" />
+    <Content Include="Fonts\avenir\Avenir-Medium.ttf" />
+    <Content Include="Fonts\avenir\Avenir-MediumOblique.ttf" />
+    <Content Include="Fonts\avenir\Avenir-Oblique.ttf" />
+    <Content Include="Fonts\avenir\Avenir-Roman.ttf" />
+    <Content Include="Fonts\montserat\Montserrat-Black.otf" />
+    <Content Include="Fonts\montserat\Montserrat-BlackItalic.otf" />
+    <Content Include="Fonts\montserat\Montserrat-Bold.otf" />
+    <Content Include="Fonts\montserat\Montserrat-Bold.ttf" />
+    <Content Include="Fonts\montserat\Montserrat-BoldItalic.ttf" />
+    <Content Include="Fonts\montserat\Montserrat-ExtraBold.otf" />
+    <Content Include="Fonts\montserat\Montserrat-ExtraBoldItalic.otf" />
+    <Content Include="Fonts\montserat\Montserrat-ExtraLight.otf" />
+    <Content Include="Fonts\montserat\Montserrat-ExtraLightItalic.otf" />
+    <Content Include="Fonts\montserat\Montserrat-Italic.ttf" />
+    <Content Include="Fonts\montserat\Montserrat-Light.otf" />
+    <Content Include="Fonts\montserat\Montserrat-LightItalic.otf" />
+    <Content Include="Fonts\montserat\Montserrat-Medium.otf" />
+    <Content Include="Fonts\montserat\Montserrat-MediumItalic.otf" />
+    <Content Include="Fonts\montserat\Montserrat-Regular.ttf" />
+    <Content Include="Fonts\montserat\Montserrat-SemiBold.otf" />
+    <Content Include="Fonts\montserat\Montserrat-SemiBoldItalic.otf" />
+    <Content Include="Fonts\montserat\Montserrat-Thin.otf" />
+    <Content Include="Fonts\montserat\Montserrat-ThinItalic.otf" />
     <None Include="packages.config" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="README.md" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
