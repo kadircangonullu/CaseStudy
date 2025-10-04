@@ -1,0 +1,212 @@
+﻿@{
+    ViewData["Title"] = "Engagement Rings";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://unpkg.com/swiper/swiper-bundle.min.css" rel="stylesheet" />
+    <link href="~/Content/styles.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>Engagement Rings</h1>
+            <p>Discover our exquisite collection of engagement rings, crafted with precision and designed to capture your perfect moment.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading">Loading beautiful rings...</div>
+        <div id="error" class="error" style="display: none;">
+            <div class="error-icon">⚠️</div>
+            <p>Unable to load products. Please try again later.</p>
+        </div>
+        <div id="productsContainer" class="products-container" style="display: none;">
+            <button id="scrollLeft" class="scroll-arrow left" disabled>‹</button>
+            <div id="productsGrid" class="products-grid"></div>
+            <button id="scrollRight" class="scroll-arrow right">›</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="container">
+            <p>&copy; 2024 Engagement Rings Collection. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        function toFiveScale(pop) {
+            let p = Number(pop);
+            if (p <= 1) p = p * 100;
+            const score = (p / 100) * 5;
+            return Math.round(score * 10) / 10;
+        }
+
+        function renderStars(score) {
+            const fullStars = Math.floor(score);
+            const hasHalfStar = score % 1 >= 0.5;
+            let stars = '';
+            
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<span class="star">★</span>';
+            }
+            
+            if (hasHalfStar) {
+                stars += '<span class="star">☆</span>';
+            }
+            
+            const emptyStars = 5 - Math.ceil(score);
+            for (let i = 0; i < emptyStars; i++) {
+                stars += '<span class="star empty">★</span>';
+            }
+            
+            return stars;
+        }
+
+        const fmtUSD = v => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v);
+
+        async function loadProducts() {
+            try {
+                const res = await fetch('/api/products');
+                if (!res.ok) throw new Error('Failed to fetch products');
+                
+                const data = await res.json();
+                const products = data.products;
+                const container = document.getElementById('productsGrid');
+                const productsContainer = document.getElementById('productsContainer');
+                const loading = document.getElementById('loading');
+                const error = document.getElementById('error');
+
+                // Hide loading, show products
+                loading.style.display = 'none';
+                productsContainer.style.display = 'block';
+
+                // Store swiper instances by product index
+                const swipers = {};
+
+                products.forEach((p, index) => {
+                    const swiperId = `swiper-${index}`;
+                    const colorKeys = Object.keys(p.images || {});
+                    const popularityScore = toFiveScale(p.popularityScore);
+
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    productCard.innerHTML = `
+                        <div class="product-image-container">
+                            <div class="swiper ${swiperId}">
+                                <div class="swiper-wrapper">
+                                    ${colorKeys.map(k => `
+                                        <div class="swiper-slide">
+                                            <img src="${p.images[k]}" alt="${p.name}" class="product-image">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">${p.name}</h3>
+                            <div class="product-price">${fmtUSD(p.priceUSD)}</div>
+                            <div class="product-popularity">
+                                <span class="popularity-label">Popularity:</span>
+                                <div class="popularity-stars">${renderStars(popularityScore)}</div>
+                                <span style="margin-left: 8px; font-size: 0.9rem; color: #7f8c8d;">${popularityScore}/5</span>
+                            </div>
+                            <div class="color-options">
+                                ${colorKeys.map((k, idx) => `
+                                    <button data-idx="${idx}" class="color-btn ${idx === 0 ? 'active' : ''}" title="${k}">
+                                        ${k}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+
+                    container.appendChild(productCard);
+                });
+
+                // Initialize Swipers after DOM is ready
+                setTimeout(() => {
+                    document.querySelectorAll('.swiper').forEach((el, index) => {
+                        const swiper = new Swiper(el, {
+                            slidesPerView: 1,
+                            spaceBetween: 0,
+                            loop: false,
+                            allowTouchMove: true,
+                        });
+                        swipers[index] = swiper;
+                    });
+
+                    // Wire color buttons
+                    document.querySelectorAll('.color-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const idx = Number(btn.getAttribute('data-idx'));
+                            const parent = btn.closest('.product-card');
+                            const swiperEl = parent.querySelector('.swiper');
+                            const swiperIndex = Array.from(document.querySelectorAll('.swiper')).indexOf(swiperEl);
+                            const swiper = swipers[swiperIndex];
+                            
+                            if (swiper) {
+                                swiper.slideTo(idx);
+                            }
+                            
+                            // Update active button
+                            parent.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                        });
+                    });
+
+                    // Initialize scroll arrows
+                    initializeScrollArrows();
+                }, 100);
+
+            } catch (err) {
+                console.error('Error loading products:', err);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function initializeScrollArrows() {
+            const scrollContainer = document.getElementById('productsGrid');
+            const leftArrow = document.getElementById('scrollLeft');
+            const rightArrow = document.getElementById('scrollRight');
+
+            function updateArrowStates() {
+                const scrollLeft = scrollContainer.scrollLeft;
+                const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+                
+                leftArrow.disabled = scrollLeft <= 0;
+                rightArrow.disabled = scrollLeft >= maxScroll - 1;
+            }
+
+            leftArrow.addEventListener('click', () => {
+                scrollContainer.scrollBy({
+                    left: -320, // card width + gap
+                    behavior: 'smooth'
+                });
+            });
+
+            rightArrow.addEventListener('click', () => {
+                scrollContainer.scrollBy({
+                    left: 320, // card width + gap
+                    behavior: 'smooth'
+                });
+            });
+
+            scrollContainer.addEventListener('scroll', updateArrowStates);
+            
+            // Initial state
+            updateArrowStates();
+        }
+
+        // Load products when page loads
+        document.addEventListener('DOMContentLoaded', loadProducts);
+    </script>
+</body>
+</html>
