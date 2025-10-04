@@ -1,6 +1,6 @@
 ﻿using CaseStudy.Models;
 using CaseStudy.Services;
-using Newtonsoft.Json; // NuGet'ten ekle
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
